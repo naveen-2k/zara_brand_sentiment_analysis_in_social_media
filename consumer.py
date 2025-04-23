@@ -24,9 +24,9 @@ consumer.subscribe(["social_media_data"])
 messages = []
 for message in consumer:
     messages.append(message.value)
-    print(f"📥 topic: {message.topic} ({message.partition}|{message.offset})")
-    print(f"🔑 key: {message.key}")
-    print("📦 value:")
+    print(f" topic: {message.topic} ({message.partition}|{message.offset})")
+    print(f" key: {message.key}")
+    print(" value:")
     print(json.dumps(message.value, indent=2))
 
 # Save messages as a single file to landing folder
@@ -43,6 +43,6 @@ if messages:
     with open(filepath, "w") as f:
         json.dump(messages, f, indent=2)
 
-    print(f"✅ File saved at: {filepath}")
+    print(f" File saved at: {filepath}")
 else:
-    print("⚠️ No messages received from Kafka topic.")
+    print(" No messages received from Kafka topic.")
