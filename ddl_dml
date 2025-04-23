@@ -1,0 +1,169 @@
+-- Create dataset table
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.dataset (
+    id INT,
+    name STRING,
+    schema STRING,
+    catalog STRING,
+    layer STRING,
+    error_table_name STRING,
+    source_name STRING,
+    source_path STRING,
+    file_name STRING,
+    description STRING,
+    date_of_creation TIMESTAMP,
+    bronze_path STRING,
+    source_type STRING,
+    format STRING,
+    schema_information STRING,
+    archive_path STRING,
+    connection_parameters STRING,
+    catalog_name STRING,
+    schema_name STRING,
+    updated_by STRING,
+    created_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP,
+    frequency STRING,
+    file_name_format STRING,
+    write_mode STRING,
+    unknown_file_path STRING
+);
+
+-- Create dataset_audit table
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.dataset_audit (
+    id BIGINT,
+    dataset_id INT,
+    buisness_date DATE,
+    status STRING,
+    error_message STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+-- Create dataset_column table
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.dataset_column (
+    id BIGINT,
+    dataset_id INT,
+    column_name STRING,
+    column_datatype STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+-- Create validation table
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.validation (
+    id BIGINT,
+    name STRING,
+    validation_type STRING,
+    notebook_path STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+-- Create validation_audit table
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.validation_audit (
+    id BIGINT,
+    dataset_column_validation_id INT,
+    status STRING,
+    error_message STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+
+CREATE TABLE IF NOT EXISTShive_metastore.pipeline_metastore.validation (
+    id BIGINT,
+    name STRING COMMENT 'Validation name (e.g., data_type_validation)',
+    validation_type STRING COMMENT 'row or column',
+    notebook_path STRING COMMENT 'Path to validation notebook',
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS hive_metastore.pipeline_metastore.dataset_validation (
+  id BIGINT GENERATED ALWAYS AS IDENTITY COMMENT 'Unique identifier for each column record',
+    dataset_column_id INT COMMENT 'FK to dataset_column.id',
+    validation_id INT COMMENT 'FK to validation.id',
+    is_active STRING COMMENT 'yes or no',
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+
+
+INSERT INTO hive_metastore.pipeline_metastore.dataset (
+    id, name, schema, catalog, layer, error_table_name, source_name, source_path,
+    file_name, description, date_of_creation, bronze_path, source_type, format,
+    schema_information, archive_path, connection_parameters, catalog_name, schema_name,
+    updated_by, created_by, created_timestamp, modified_timestamp, frequency,
+    file_name_format, write_mode, unknown_file_path
+)
+VALUES (
+    1, 'post_detail', 'bronze', 'hive_metastore', 'bronze',
+    'post_detail_error', 'facebook', '/mnt/capstone-group-8/landing/post_detail/',
+    'post_detail', 'Social media post details from Facebook', current_timestamp(),
+    '/mnt/capstone-group-8/bronze/post_detail/', 'API', 'json',
+    '/mnt/capstone-group-8/checkpoint/post_detail/', '/mnt/capstone-group-8/archive/post_detail/',
+    'redpanda_connection_details_api', 'meta', 'post_data',
+    current_user(), current_user(), current_timestamp(), current_timestamp(),
+    'hourly', 'post_detail_(\\d{4}-\\d{2}-\\d{2}_\\d{2}-\\d{2}-\\d{2})\\.json', 'append',
+    '/mnt/capstone-group-8/unknown/post_detail/'
+);
+
+INSERT INTO hive_metastore.pipeline_metastore.dataset_column
+(id, dataset_id, column_name, column_datatype, created_by, modified_by, created_timestamp, modified_timestamp)
+VALUES
+(1, 1, 'message', 'STRING', 'admin', 'admin', current_timestamp(), current_timestamp()),
+(2, 1, 'comments.data.message', 'STRING', 'admin', 'admin', current_timestamp(), current_timestamp());
+
+INSERT INTO hive_metastore.pipeline_metastore.validation (
+  id, name, validation_type, notebook_path, created_by, modified_by, created_timestamp, modified_timestamp
+)
+VALUES
+(1, 'column_null_validation', 'column', '/Workspace/Users/naveen_m@latentviewo365.onmicrosoft.com/column_null_validation.py', current_user(), current_user(), current_timestamp(), current_timestamp());
+
+
+
+INSERT INTO hive_metastore.pipeline_metastore.dataset_column_validation (
+  id, dataset_column_id, validation_id, is_active, created_by, modified_by, created_timestamp, modified_timestamp
+)
+VALUES
+  -- transaction dataset (dataset_id = 1)
+  (1, 1, 1, 'yes', current_user(), current_user(), current_timestamp(), current_timestamp()),
+  (2, 2, 1, 'yes', current_user(), current_user(), current_timestamp(), current_timestamp());
+
+CREATE TABLE hive_metastore.pipeline_metastore.dataset_aggregation (
+    id BIGINT,
+    aggregation_id INT,
+    dataset_id INT,
+    is_active STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+
+CREATE TABLE hive_metastore.pipeline_metastore.aggregation_dependency (
+    id BIGINT,
+    dataset_id STRING,
+    dependant_dataset_id STRING,
+    created_by STRING,
+    modified_by STRING,
+    created_timestamp TIMESTAMP,
+    modified_timestamp TIMESTAMP
+);
+
+
