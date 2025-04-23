@@ -53,7 +53,7 @@ def log_audit(dataset_id, business_date, status, error_message=""):
 def move_to_unknown(file_path, filename):
     unknown_file_path = f"{unknown_path}/{filename}"
     shutil.move(file_path, unknown_file_path)
-    print(f"🚨 Moved {file_path} ➝ {unknown_file_path}")
+    print(f"Moved {file_path} ➝ {unknown_file_path}")
 
 # Write batch files to Bronze layer
 def write_to_bronze(batch_df, batch_id):
@@ -82,11 +82,11 @@ def write_to_bronze(batch_df, batch_id):
                 .save(f"{bronze_path}/{file['year']}/{file['month']}/{file['day']}/{filename}")
 
             log_audit(ingestion_metadata_id, business_date, "Success")
-            print(f"✅ Ingestion Success for {filename}")
+            print(f"Ingestion Success for {filename}")
 
         except Exception as e:
             log_audit(ingestion_metadata_id, business_date, "Failed", str(e))
-            print(f"❌ Error processing {filename}: {e}")
+            print(f"Error processing {filename}: {e}")
 
 # Define streaming DataFrame
 df = (
@@ -113,4 +113,4 @@ df.writeStream \
     .option("checkpointLocation", checkpoint_path) \
     .start()
 
-print("🚀 Ingestion started for post_detail...")
+print(" Ingestion started for post_detail...")
