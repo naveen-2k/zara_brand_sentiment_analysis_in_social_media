@@ -1,8 +1,8 @@
 import re
 import json
 
-validation_audit="dbx_training_batch3.pipline_metastore.validation_audit"
-dataset_audit="dbx_training_batch3.pipline_metastore.dataset_audit"
+validation_audit="hive_metastore.pipeline_metastore.validation_audit"
+dataset_audit="hive_metastore.pipeline_metastore.dataset_audit"
 def extract_date_parts(date, format):
     year = re.search(r"(\d{4})", date).group(1)
     month = re.search(r"-(\d{2})-", date).group(1)
@@ -109,8 +109,8 @@ metadata=spark.sql("""select
                    from dbx_training_batch3.pipline_metastore.dataset a 
                    join dbx_training_batch3.pipline_metastore.dataset_audit b 
                    on a.id=b.dataset_id 
-                   where (b.status='Success' or b.status='Validation Failed')
-                   and a.source_name='bank'  and a.id=2
+                   where (b.status='Success' or b.status='Failed')
+                   and a.source_name='facebook' and a.layer='silver'
                    and b.created_by=current_user();""")
 
 #display(metadata)
@@ -197,11 +197,8 @@ for data in ingetsed_dataset:
                 
                 error_data=spark.sql(f"""select distinct * from {catalog}.{silver_schema}.{error_table_name} where file_date='{business_date}'""")
                 print(error_data.show())
-                pk=""
-                if dataset_id==1:
-                    pk="transaction_id"
-                if dataset_id==2:
-                    pk="account_id"
+                pk="id"
+                
                 validated_df = df.join(error_data, on=f"{pk}", how="leftanti")
                 
 
