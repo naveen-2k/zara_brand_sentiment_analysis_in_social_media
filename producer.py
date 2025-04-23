@@ -5,11 +5,11 @@ from kafka import KafkaProducer
 
 # Redpanda (Kafka) Producer Config
 producer = KafkaProducer(
-    bootstrap_servers="cvlbcp4geec79i9lhn20.any.ap-south-1.mpx.prd.cloud.redpanda.com:9092",
+    bootstrap_servers="<server-name>",
     security_protocol="SASL_SSL",
     sasl_mechanism="SCRAM-SHA-256",
     sasl_plain_username="sentiment_analysis_group_consumer_good",
-    sasl_plain_password="QkTedQruo6g01T5QTVX02sUK5n5lrj",
+    sasl_plain_password="<pass-word>", #
     value_serializer=lambda v: json.dumps(v).encode("utf-8"),
     key_serializer=lambda k: k.encode("utf-8")
 )
