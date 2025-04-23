@@ -26,10 +26,10 @@ for filename in os.listdir(json_dir):
             try:
                 json_data = json.load(f)
                 producer.send("social_media_data", key=hostname, value=json_data)
-                print(f"✅ Sent file '{filename}' to topic 'social_media_data'")
+                print(f" Sent file '{filename}' to topic 'social_media_data'")
             except Exception as e:
-                print(f"❌ Failed to send '{filename}': {e}")
+                print(f" Failed to send '{filename}': {e}")
 
 producer.flush()
 producer.close()
-print("✅ All files processed.")
+print(" All files processed.")
